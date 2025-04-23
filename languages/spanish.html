@@ -422,93 +422,102 @@
           // Renamed from processJsonLesson
           function processJsonPage(pageData) {
                console.log("Processing JSON page:", pageData);
-               const pageContentDiv = document.getElementById('pageContent');
-               pageContentDiv.innerHTML = '';
-
-               // Create lesson and exercise containers
-               const lessonContentDiv = document.createElement('div');
-               lessonContentDiv.id = 'lessonContent';
-
-               const exercisesContainer = document.createElement('div');
-               exercisesContainer.id = 'exercisesContainer';
-               exercisesContainer.style.display = 'none'; // Initially hide exercises
-
-
-                let vocabHtml = "";
-                let grammarHtml = "";
-                let exercisesHtml = "";
                try {
-                   // Display Vocabulary, Grammar as before
-                   if (pageData.vocabulary) {
-                        vocabHtml = "<h3>Vocabulary</h3>";
-                       pageData.vocabulary.forEach(vocab => {
-                           vocabHtml += `
-                                <div class="vocab-item">
-                                    <p><b>${vocab.word}:</b> ${vocab.definition}</p>
-                                    <button class="speak-button" onclick="speak('${vocab.word}')">Speak</button>
-                                </div>
-                            `;
-                       });
-                       lessonContentDiv.innerHTML += vocabHtml;
+                   const pageContentDiv = document.getElementById('pageContent');
+
+                   if (!pageContentDiv) {
+                       console.error("pageContentDiv is null.  Check if the element exists in the DOM.");
+                       return; // Exit the function if pageContentDiv is null
                    }
 
-                   if (pageData.grammar) {
-                        grammarHtml = "<h3>Grammar</h3>";
-                       pageData.grammar.forEach(grammar => {
-                           grammarHtml += `<div class="grammar-item"><p><b>${grammar.title}:</b> ${grammar.explanation}</p></div>`;
-                       });
-                       lessonContentDiv.innerHTML += grammarHtml;
-                   }
+                   pageContentDiv.innerHTML = '';
 
-                     lessonContentDiv.innerHTML += `<button onclick="showExercises()">Start Exercises</button>`;
+                   // Create lesson and exercise containers
+                   const lessonContentDiv = document.createElement('div');
+                   lessonContentDiv.id = 'lessonContent';
 
-                     //Append lesson content to the page
-                     pageContentDiv.appendChild(lessonContentDiv);
+                   const exercisesContainer = document.createElement('div');
+                   exercisesContainer.id = 'exercisesContainer';
+                   exercisesContainer.style.display = 'none'; // Initially hide exercises
 
-                    if (pageData.exercises && Array.isArray(pageData.exercises)) {
-                        exercisesHtml = "<h3>Exercises</h3>";
 
-                        pageData.exercises.forEach((exercise, index) => {
-                            const safeQuestion = exercise.question.replace(/"/g, '&quot;');
-                            exercisesHtml += `<div class="exercise" id="exercise${index}">`;
-                            exercisesHtml += `<p class="question">${safeQuestion}</p>`;
+                    let vocabHtml = "";
+                    let grammarHtml = "";
+                    let exercisesHtml = "";
+                   try {
+                       // Display Vocabulary, Grammar as before
+                       if (pageData.vocabulary) {
+                            vocabHtml = "<h3>Vocabulary</h3>";
+                           pageData.vocabulary.forEach(vocab => {
+                               vocabHtml += `
+                                    <div class="vocab-item">
+                                        <p><b>${vocab.word}:</b> ${vocab.definition}</p>
+                                        <button class="speak-button" onclick="speak('${vocab.word}')">Speak</button>
+                                    </div>
+                                `;
+                           });
+                           lessonContentDiv.innerHTML += vocabHtml;
+                       }
 
-                            if (exercise.type === 'multipleChoice' && Array.isArray(exercise.options)) {
-                                const shuffledOptions = [...exercise.options].sort(() => Math.random() - 0.5);
-                                shuffledOptions.forEach((option, optionIndex) => {
-                                    const safeOption = option.replace(/"/g, '&quot;');
-                                    exercisesHtml += `
-                                        <div class="option">
-                                            <input type="radio" id="exercise${index}Option${optionIndex}" name="exercise${index}" value="${safeOption}">
-                                            <label for="exercise${index}Option${optionIndex}">${option}</label>
-                                        </div>
-                                    `;
-                                });
-                            } else if (exercise.type === 'fillInTheBlank') {
-                                const savedAnswer = savedAnswers[currentPage + '-' + index] || ''; // Retrieve saved answer
-                                exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer" value="${savedAnswer}" oninput="saveAnswer(${currentPage}, ${index}, this.value)">`;
-                            }
+                       if (pageData.grammar) {
+                            grammarHtml = "<h3>Grammar</h3>";
+                           pageData.grammar.forEach(grammar => `<div class="grammar-item"><p><b>${grammar.title}:</b> ${grammar.explanation}</p></div>`);
+                           lessonContentDiv.innerHTML += grammarHtml;
+                       }
 
-                            const correctAnswer = exercise.correctAnswer.replace(/"/g, '&quot;');
-                            exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer}">Check</button>`;
-                            exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`;
+                         lessonContentDiv.innerHTML += `<button onclick="showExercises()">Start Exercises</button>`;
+
+                         //Append lesson content to the page
+                         pageContentDiv.appendChild(lessonContentDiv);
+
+                        if (pageData.exercises && Array.isArray(pageData.exercises)) {
+                            exercisesHtml = "<h3>Exercises</h3>";
+
+                            pageData.exercises.forEach((exercise, index) => {
+                                const safeQuestion = exercise.question.replace(/"/g, '&quot;');
+                                exercisesHtml += `<div class="exercise" id="exercise${index}">`;
+                                exercisesHtml += `<p class="question">${safeQuestion}</p>`;
+
+                                if (exercise.type === 'multipleChoice' && Array.isArray(exercise.options)) {
+                                    const shuffledOptions = [...exercise.options].sort(() => Math.random() - 0.5);
+                                    shuffledOptions.forEach((option, optionIndex) => {
+                                        const safeOption = option.replace(/"/g, '&quot;');
+                                        exercisesHtml += `
+                                            <div class="option">
+                                                <input type="radio" id="exercise${index}Option${optionIndex}" name="exercise${index}" value="${safeOption}">
+                                                <label for="exercise${index}Option${optionIndex}">${option}</label>
+                                            </div>
+                                        `;
+                                    });
+                                } else if (exercise.type === 'fillInTheBlank') {
+                                    const savedAnswer = savedAnswers[currentPage + '-' + index] || ''; // Retrieve saved answer
+                                    exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer" value="${savedAnswer}" oninput="saveAnswer(${currentPage}, ${index}, this.value)">`;
+                                }
+
+                                const correctAnswer = exercise.correctAnswer.replace(/"/g, '&quot;');
+                                exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer}">Check</button>`;
+                                exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`;
+                                exercisesHtml += '</div>';
+                            });
+
+                            exercisesHtml += '<div id="spanishKeyboard">';
+                            exercisesHtml += '<button onclick="insertChar(\'ñ\', 0)">ñ</button>';
+                            exercisesHtml += '<button onclick="insertChar(\'¿\', 0)">¿</button>';
+                            exercisesHtml += '<button onclick="insertChar(\'¡\', 0)">¡</button>';
                             exercisesHtml += '</div>';
-                        });
+                            exercisesContainer.innerHTML = exercisesHtml;
 
-                        exercisesHtml += '<div id="spanishKeyboard">';
-                        exercisesHtml += '<button onclick="insertChar(\'ñ\', 0)">ñ</button>';
-                        exercisesHtml += '<button onclick="insertChar(\'¿\', 0)">¿</button>';
-                        exercisesHtml += '<button onclick="insertChar(\'¡\', 0)">¡</button>';
-                        exercisesHtml += '</div>';
-                        exercisesContainer.innerHTML = exercisesHtml;
+                        }
 
-                    }
+                         pageContentDiv.appendChild(exercisesContainer);
 
-                     pageContentDiv.appendChild(exercisesContainer);
-
-               } catch (error) {
-                    console.error("Error rendering page content:", error);
-                    pageContentDiv.innerHTML = '<p>Error displaying page content.</p>';
+                   } catch (error) {
+                        console.error("Error rendering page content:", error);
+                        pageContentDiv.innerHTML = '<p>Error displaying page content.</p>';
+                   }
+               } catch (overallError) {
+                   console.error("Error in processJsonPage:", overallError);
+                   document.getElementById('pageContent').innerHTML = `<p>Error processing page.  See console for details.</p>`;
                }
           }
 
@@ -599,6 +608,15 @@
         // Initial Load on window load
         window.onload = () => {
              console.log("Window loaded. Initializing page.");
+
+             if (typeof puter === 'undefined' || !puter.isInitialized) {
+                 console.warn("Putter.js is not initialized.  AI features may not work.  Ensure you are logged in.");
+                 const pageContentDiv = document.getElementById('pageContent');
+                 if (pageContentDiv) {
+                     pageContentDiv.innerHTML = "<p><b>Warning:</b> AI features may not work because Putter.js is not initialized. Ensure you are logged in.</p>";
+                 }
+             }
+
              loadProgress(); // Load progress first
              loadPage(currentPage);
         };
