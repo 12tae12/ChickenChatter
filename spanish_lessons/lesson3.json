@@ -32,7 +32,7 @@
       "type": "multipleChoice",
       "question": "What is 'Tres'?",
       "options": ["One", "Two", "Three", "Four"],
-      "correctAnswer": 2
+      "correctAnswer": "Three"
     },
       {
       "type": "fillInTheBlank",

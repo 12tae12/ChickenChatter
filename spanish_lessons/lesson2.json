@@ -28,7 +28,7 @@
       "type": "multipleChoice",
       "question": "What does '¿Cómo estás?' mean?",
       "options": ["Hello", "How are you?", "Goodbye", "Thank you"],
-      "correctAnswer": 1
+      "correctAnswer": "How are you?"
     },
       {
       "type": "fillInTheBlank",

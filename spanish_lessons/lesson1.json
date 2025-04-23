@@ -20,7 +20,7 @@
       "type": "multipleChoice",
       "question": "What does 'Hola' mean?",
       "options": ["Hello", "Goodbye", "Thank you", "Please"],
-      "correctAnswer": 0
+      "correctAnswer": "Hello"
     },
     {
       "type": "fillInTheBlank",
