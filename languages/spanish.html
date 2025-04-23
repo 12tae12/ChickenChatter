@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Chicken Chatter - Spanish Course</title>
+    <style>
+        /* Styles copied from the previous learner.html, adjust as needed */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h3 {
+            color: #333;
+        }
+        #pageContainer {
+             background-color: #fff;
+             padding: 20px;
+             border-radius: 8px;
+             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #pageContent {
+            margin-top: 20px;
+        }
+        .vocab-item, .grammar-item {
+            margin-bottom: 10px;
+            padding-left: 15px;
+            border-left: 3px solid #007bff; /* Accent line */
+        }
+        .exercise {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .question {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .option {
+            margin-bottom: 8px;
+            display: block; /* Ensure options are on separate lines */
+        }
+        .option label {
+            margin-left: 5px;
+        }
+        .exercise input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .exercise button {
+            padding: 8px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px; /* Add some space if next to input */
+        }
+        .exercise button:hover {
+            background-color: #218838;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        #navigation {
+            margin-top: 20px;
+            text-align: center;
+        }
+         #navigation button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 0 10px;
+         }
+         #navigation button:hover {
+             background-color: #0056b3;
+         }
+         #navigation button:disabled {
+             background-color: #ccc;
+             cursor: not-allowed;
+         }
+         .back-link {
+            display: block;
+            margin-bottom: 15px;
+            color: #007bff;
+            text-decoration: none;
+         }
+         .back-link:hover {
+            text-decoration: underline;
+         }
+
+    </style>
+    <!-- Load Putter.js script ONCE in the head -->
+    <script src="https://js.puter.com/v2/" defer></script>
+</head>
+<body>
+    <div id="pageContainer">
+         <a href="../learner.html" class="back-link">&larr; Back to Course Selection</a>
+        <h1>Spanish Course</h1>
+        <div id="pageContent">
+            <p>Loading page...</p>
+        </div>
+        <div id="navigation">
+            <button id="prevButton" onclick="previousPage()" disabled>Previous Page</button>
+            <button id="nextButton" onclick="nextPage()">Next Page</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const pageDirectory = "spanish_pages/"; // Updated directory name
+        const conversationInterval = 7; // Trigger conversation every 7 pages
+        let totalPages = 3; // Keep track of available pages (Update this manually or dynamically)
+
+        // Function to update navigation button states
+        function updateNavButtons() {
+            document.getElementById('prevButton').disabled = (currentPage <= 1);
+            document.getElementById('nextButton').disabled = (currentPage >= totalPages);
+        }
+
+        async function loadPage(pageNumber) {
+            console.log(`Loading page ${pageNumber}`);
+            let pageFile;
+            let isConversation = false;
+
+            if (pageNumber % conversationInterval === 0) {
+                pageFile = pageDirectory + "conversation.txt"; // Conversation page
+                isConversation = true;
+                 console.log("Loading conversation file:", pageFile);
+            } else {
+                pageFile = pageDirectory + "page" + pageNumber + ".json"; // Load JSON pages
+                 console.log("Loading JSON page file:", pageFile);
+            }
+
+            const pageContentDiv = document.getElementById('pageContent');
+            pageContentDiv.innerHTML = '<p>Loading page...</p>'; // Show loading message
+
+            try {
+                const response = await fetch(pageFile);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                       pageContentDiv.innerHTML = `<p>Page ${pageNumber} not found. You might be at the end!</p>`;
+                       totalPages = pageNumber - 1; // Update total known pages
+                       updateNavButtons();
+                       return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status} for ${pageFile}`);
+                }
+
+                if (isConversation) {
+                    const pagePrompt = await response.text();
+                    processConversation(pagePrompt);
+                } else {
+                    const pageData = await response.json();
+                    // Rename lesson files in the JSON data (optional but good practice)
+                    // This assumes the JSON structure uses 'lesson' keys; update if needed
+                    processJsonPage(pageData);
+                }
+                updateNavButtons();
+
+            } catch (error) {
+                console.error("Error loading or parsing page:", error);
+                pageContentDiv.innerHTML = `<p>Error loading page ${pageNumber}. Please check the console for details.</p>`;
+                updateNavButtons();
+            }
+        }
+
+        async function processConversation(prompt) {
+             console.log("Processing conversation prompt...");
+             const pageContentDiv = document.getElementById('pageContent');
+             pageContentDiv.innerHTML = '<p>Generating conversation...</p>';
+             try {
+                 const aiResponse = await puter.ai.chat(prompt);
+                 pageContentDiv.innerHTML = `<p>${aiResponse}</p>`;
+                 console.log("AI Response:", aiResponse);
+             } catch (error) {
+                 console.error("Error processing conversation with AI:", error);
+                 pageContentDiv.innerHTML = "<p>Error generating AI content. Check console.</p>";
+                 if (error && error.message && error.message.includes('401')) {
+                     pageContentDiv.innerHTML += "<p><i>(Authentication error with Putter.js. Ensure you are logged in or the service is configured correctly.)</i></p>";
+                 }
+             }
+        }
+
+        // Renamed from processJsonLesson
+        function processJsonPage(pageData) {
+            console.log("Processing JSON page:", pageData);
+            const pageContentDiv = document.getElementById('pageContent');
+            pageContentDiv.innerHTML = ''; // Clear previous content
+
+            try {
+                // Display Vocabulary, Grammar, Exercises as before
+                if (pageData.vocabulary) {
+                    let vocabHtml = "<h3>Vocabulary</h3>";
+                    pageData.vocabulary.forEach(vocab => {
+                        vocabHtml += `<div class="vocab-item"><p><b>${vocab.word}:</b> ${vocab.definition}</p></div>`;
+                    });
+                     pageContentDiv.innerHTML += vocabHtml;
+                }
+
+                if (pageData.grammar) {
+                     let grammarHtml = "<h3>Grammar</h3>";
+                    pageData.grammar.forEach(grammar => {
+                        grammarHtml += `<div class="grammar-item"><p><b>${grammar.title}:</b> ${grammar.explanation}</p></div>`;
+                    });
+                     pageContentDiv.innerHTML += grammarHtml;
+                }
+
+                if (pageData.exercises && Array.isArray(pageData.exercises)) {
+                    let exercisesHtml = "<h3>Exercises</h3>";
+                    pageData.exercises.forEach((exercise, index) => {
+                        const safeQuestion = exercise.question.replace(/"/g, '&quot;');
+                        exercisesHtml += `<div class="exercise" id="exercise${index}">`;
+                        exercisesHtml += `<p class="question">${safeQuestion}</p>`;
+
+                        if (exercise.type === 'multipleChoice' && Array.isArray(exercise.options)) {
+                             const shuffledOptions = [...exercise.options].sort(() => Math.random() - 0.5);
+                             shuffledOptions.forEach((option, optionIndex) => {
+                                const safeOption = option.replace(/"/g, '&quot;');
+                                exercisesHtml += `
+                                    <div class="option">
+                                        <input type="radio" id="exercise${index}Option${optionIndex}" name="exercise${index}" value="${safeOption}">
+                                        <label for="exercise${index}Option${optionIndex}">${option}</label>
+                                    </div>
+                                `;
+                            });
+                        } else if (exercise.type === 'fillInTheBlank') {
+                            exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer">`;
+                        }
+
+                        const correctAnswer = exercise.correctAnswer.replace(/"/g, '&quot;');
+                        exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer}">Check</button>`;
+                        exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`;
+                        exercisesHtml += '</div>';
+                    });
+                     pageContentDiv.innerHTML += exercisesHtml;
+                }
+            } catch (error) {
+                 console.error("Error rendering page content:", error);
+                 pageContentDiv.innerHTML = '<p>Error displaying page content.</p>';
+            }
+        }
+
+        // checkExercise function remains largely the same
+        function checkExercise(exerciseIndex, exerciseType, buttonElement) {
+            console.log(`Checking exercise ${exerciseIndex}, type: ${exerciseType}`);
+            let userAnswer;
+            let isCorrect = false;
+            const feedbackDiv = document.getElementById(`feedback${exerciseIndex}`);
+            const correctAnswer = buttonElement.getAttribute('data-correct-answer');
+            feedbackDiv.innerHTML = '';
+
+            if (exerciseType === 'multipleChoice') {
+                const selectedOption = document.querySelector(`input[name="exercise${exerciseIndex}"]:checked`);
+                if (selectedOption) {
+                    userAnswer = selectedOption.value;
+                    if (userAnswer === correctAnswer) {
+                       isCorrect = true;
+                    }
+                } else {
+                    userAnswer = null;
+                }
+            } else if (exerciseType === 'fillInTheBlank') {
+                 const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
+                 if (inputElement) {
+                    userAnswer = inputElement.value.trim();
+                    if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                        isCorrect = true;
+                    }
+                 } else {
+                      userAnswer = null;
+                 }
+            }
+
+            if (userAnswer === null) {
+                 feedbackDiv.innerHTML = `<p class="incorrect">Please select or enter an answer.</p>`;
+                 return;
+            }
+
+            if (isCorrect) {
+                feedbackDiv.innerHTML = '<p class="correct">Correct!</p>';
+                 buttonElement.disabled = true;
+                 if (exerciseType === 'multipleChoice') {
+                     document.querySelectorAll(`input[name="exercise${exerciseIndex}"]`).forEach(radio => radio.disabled = true);
+                 } else if (exerciseType === 'fillInTheBlank') {
+                      const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
+                      if (inputElement) inputElement.disabled = true;
+                 }
+            } else {
+                feedbackDiv.innerHTML = `<p class="incorrect">Incorrect. The correct answer is: ${correctAnswer}</p>`;
+            }
+        }
+
+        // Renamed from nextLesson
+        function nextPage() {
+            currentPage++;
+            loadPage(currentPage);
+        }
+
+        // Renamed from previousLesson
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadPage(currentPage);
+            }
+        }
+
+        // Initial Load on window load
+        window.onload = () => {
+             console.log("Window loaded. Initializing page.");
+             loadPage(currentPage);
+        };
+    </script>
+</body>
+</html>

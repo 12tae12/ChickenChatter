@@ -1,332 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chicken Chatter - Spanish Course</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicken Chatter - Select a Course</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        h1, h3 {
-            color: #333;
-        }
-        #lessonContainer {
-             background-color: #fff;
-             padding: 20px;
-             border-radius: 8px;
-             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        #lessonContent {
-            margin-top: 20px;
-        }
-        .vocab-item, .grammar-item {
-            margin-bottom: 10px;
-            padding-left: 15px;
-            border-left: 3px solid #007bff; /* Accent line */
-        }
-        .exercise {
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .question {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .option {
-            margin-bottom: 8px;
-            display: block; /* Ensure options are on separate lines */
-        }
-        .option label {
-            margin-left: 5px;
-        }
-        .exercise input[type="text"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-        .exercise button {
-            padding: 8px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 5px; /* Add some space if next to input */
-        }
-        .exercise button:hover {
-            background-color: #218838;
-        }
-        .feedback {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .correct {
-            color: green;
-        }
-        .incorrect {
-            color: red;
-        }
-        #navigation {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Use min-height for flexibility */
+            margin: 0;
+            background-color: #f0f0f0;
             text-align: center;
         }
-         #navigation button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007bff;
+        .container {
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .course-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .course-list li {
+            margin-bottom: 15px;
+        }
+        .course-link {
+            display: inline-block; /* Allows padding and styling */
+            padding: 12px 25px;
+            font-size: 18px;
             color: white;
+            background-color: #007bff; /* Bootstrap primary blue */
             border: none;
             border-radius: 5px;
-            margin: 0 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .course-link:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+         .back-link { /* Optional: Link back to index if needed */
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
          }
-         #navigation button:hover {
-             background-color: #0056b3;
+         .back-link:hover {
+            text-decoration: underline;
          }
-         #navigation button:disabled {
-             background-color: #ccc;
-             cursor: not-allowed;
-         }
-
     </style>
-    <!-- Load Putter.js script ONCE in the head -->
-    <script src="https://js.puter.com/v2/" defer></script>
 </head>
 <body>
-    <div id="lessonContainer">
-        <h1>Spanish Course</h1>
-        <div id="lessonContent">
-            <p>Loading lesson...</p>
-        </div>
-        <div id="navigation">
-            <button id="prevButton" onclick="previousLesson()" disabled>Previous Lesson</button>
-            <button id="nextButton" onclick="nextLesson()">Next Lesson</button>
-        </div>
+    <div class="container">
+        <h1>Select Your Language Course</h1>
+        <ul class="course-list">
+            <li>
+                <a href="languages/spanish.html" class="course-link">Learn Spanish</a>
+            </li>
+            <!-- Add more languages here as needed -->
+            <!-- Example:
+            <li>
+                <a href="languages/french.html" class="course-link">Learn French (Coming Soon)</a>
+            </li>
+             -->
+        </ul>
+         <a href="index.html" class="back-link">&larr; Back to Home</a>
     </div>
-
-    <script>
-        let currentLesson = 1;
-        const lessonDirectory = "spanish_lessons/";
-        const conversationInterval = 7; // Trigger conversation every 7 lessons
-        let totalLessons = 3; // Keep track of available lessons (Update this manually or dynamically)
-
-        // Function to update navigation button states
-        function updateNavButtons() {
-            document.getElementById('prevButton').disabled = (currentLesson <= 1);
-            // Disable next if we don't know if the next lesson exists yet, or if it's the last known lesson
-            // A more robust solution would check if lessonFile exists before enabling 'next'
-            document.getElementById('nextButton').disabled = (currentLesson >= totalLessons); // Simple check for now
-        }
-
-        async function loadLesson(lessonNumber) {
-            console.log(`Loading lesson ${lessonNumber}`);
-            let lessonFile;
-            let isConversation = false;
-
-            if (lessonNumber % conversationInterval === 0) {
-                lessonFile = lessonDirectory + "conversation.txt";
-                isConversation = true;
-                 console.log("Loading conversation file:", lessonFile);
-            } else {
-                lessonFile = lessonDirectory + "lesson" + lessonNumber + ".json";
-                 console.log("Loading JSON lesson file:", lessonFile);
-            }
-
-            const lessonContentDiv = document.getElementById('lessonContent');
-            lessonContentDiv.innerHTML = '<p>Loading lesson...</p>'; // Show loading message
-
-            try {
-                const response = await fetch(lessonFile);
-                if (!response.ok) {
-                    // If a lesson file doesn't exist (e.g., lesson 4), disable 'next'
-                    if (response.status === 404) {
-                       lessonContentDiv.innerHTML = `<p>Lesson ${lessonNumber} not found. You might be at the end!</p>`;
-                       totalLessons = lessonNumber - 1; // Update total known lessons
-                       updateNavButtons();
-                       return; // Stop processing
-                    }
-                    throw new Error(`HTTP error! status: ${response.status} for ${lessonFile}`);
-                }
-
-                if (isConversation) {
-                    const lessonPrompt = await response.text();
-                    processConversation(lessonPrompt);
-                } else {
-                    const lessonData = await response.json();
-                    processJsonLesson(lessonData);
-                }
-                updateNavButtons(); // Update buttons after successful load
-
-            } catch (error) {
-                console.error("Error loading or parsing lesson:", error);
-                lessonContentDiv.innerHTML = `<p>Error loading lesson ${lessonNumber}. Please check the console for details.</p>`;
-                updateNavButtons(); // Still update buttons based on currentLesson
-            }
-        }
-
-        async function processConversation(prompt) {
-             console.log("Processing conversation prompt...");
-             const lessonContentDiv = document.getElementById('lessonContent');
-             lessonContentDiv.innerHTML = '<p>Generating conversation...</p>';
-             try {
-                // Use Putter.js to process the prompt and display the result
-                // The .then(puter.print) approach might be simpler if it works reliably
-                 const aiResponse = await puter.ai.chat(prompt);
-                 lessonContentDiv.innerHTML = `<p>${aiResponse}</p>`; // Display raw response for now
-                 console.log("AI Response:", aiResponse);
-             } catch (error) {
-                 console.error("Error processing conversation with AI:", error);
-                 lessonContentDiv.innerHTML = "<p>Error generating AI content. Check console.</p>";
-                 // Check if the error is 401 Unauthorized specifically
-                 if (error && error.message && error.message.includes('401')) {
-                     lessonContentDiv.innerHTML += "<p><i>(Authentication error with Putter.js. Ensure you are logged in or the service is configured correctly.)</i></p>";
-                 }
-             }
-        }
-
-        function processJsonLesson(lessonData) {
-            console.log("Processing JSON lesson:", lessonData);
-            const lessonContentDiv = document.getElementById('lessonContent');
-            lessonContentDiv.innerHTML = ''; // Clear previous content
-
-            try {
-                if (lessonData.vocabulary) {
-                    let vocabHtml = "<h3>Vocabulary</h3>";
-                    lessonData.vocabulary.forEach(vocab => {
-                        vocabHtml += `<div class="vocab-item"><p><b>${vocab.word}:</b> ${vocab.definition}</p></div>`;
-                    });
-                     lessonContentDiv.innerHTML += vocabHtml;
-                }
-
-                if (lessonData.grammar) {
-                     let grammarHtml = "<h3>Grammar</h3>";
-                    lessonData.grammar.forEach(grammar => {
-                        grammarHtml += `<div class="grammar-item"><p><b>${grammar.title}:</b> ${grammar.explanation}</p></div>`;
-                    });
-                     lessonContentDiv.innerHTML += grammarHtml;
-                }
-
-                if (lessonData.exercises && Array.isArray(lessonData.exercises)) {
-                    let exercisesHtml = "<h3>Exercises</h3>";
-                    lessonData.exercises.forEach((exercise, index) => {
-                        // Escape potential quotes in question text for safety, though usually not needed for display
-                        const safeQuestion = exercise.question.replace(/"/g, '&quot;');
-                        exercisesHtml += `<div class="exercise" id="exercise${index}">`;
-                        exercisesHtml += `<p class="question">${safeQuestion}</p>`;
-
-                        if (exercise.type === 'multipleChoice' && Array.isArray(exercise.options)) {
-                             // Shuffle options for less predictability
-                             const shuffledOptions = [...exercise.options].sort(() => Math.random() - 0.5);
-                             shuffledOptions.forEach((option, optionIndex) => {
-                                const safeOption = option.replace(/"/g, '&quot;'); // Escape option text for value attribute
-                                exercisesHtml += `
-                                    <div class="option">
-                                        <input type="radio" id="exercise${index}Option${optionIndex}" name="exercise${index}" value="${safeOption}">
-                                        <label for="exercise${index}Option${optionIndex}">${option}</label>
-                                    </div>
-                                `;
-                            });
-                        } else if (exercise.type === 'fillInTheBlank') {
-                            exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer">`;
-                        }
-
-                        // Pass index and store correct answer securely using data attribute
-                        const correctAnswer = exercise.correctAnswer; // Get the correct answer text
-                        exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer.replace(/"/g, '&quot;')}">Check</button>`;
-                        exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`; // Feedback div
-                        exercisesHtml += '</div>'; // Close exercise div
-                    });
-                     lessonContentDiv.innerHTML += exercisesHtml;
-                }
-            } catch (error) {
-                 console.error("Error rendering lesson content:", error);
-                 lessonContentDiv.innerHTML = '<p>Error displaying lesson content.</p>';
-            }
-        }
-
-        function checkExercise(exerciseIndex, exerciseType, buttonElement) {
-            console.log(`Checking exercise ${exerciseIndex}, type: ${exerciseType}`);
-            let userAnswer;
-            let isCorrect = false;
-            const feedbackDiv = document.getElementById(`feedback${exerciseIndex}`);
-            const correctAnswer = buttonElement.getAttribute('data-correct-answer'); // Retrieve correct answer from data attribute
-            feedbackDiv.innerHTML = ''; // Clear previous feedback
-
-            if (exerciseType === 'multipleChoice') {
-                const selectedOption = document.querySelector(`input[name="exercise${exerciseIndex}"]:checked`);
-                if (selectedOption) {
-                    userAnswer = selectedOption.value; // Value is the option text
-                    if (userAnswer === correctAnswer) {
-                       isCorrect = true;
-                    }
-                } else {
-                    userAnswer = null; // Indicate no answer selected
-                }
-            } else if (exerciseType === 'fillInTheBlank') {
-                 const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
-                 if (inputElement) {
-                    userAnswer = inputElement.value.trim(); // Trim whitespace
-                    // Case-insensitive comparison
-                    if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                        isCorrect = true;
-                    }
-                 } else {
-                      userAnswer = null; // Should not happen if ID is correct
-                 }
-
-            }
-
-            if (userAnswer === null) {
-                 feedbackDiv.innerHTML = `<p class="incorrect">Please select or enter an answer.</p>`;
-                 return; // Don't proceed further if no answer given
-            }
-
-
-            if (isCorrect) {
-                feedbackDiv.innerHTML = '<p class="correct">Correct!</p>';
-                 buttonElement.disabled = true; // Disable button after correct answer
-                 // Optionally disable inputs too
-                 if (exerciseType === 'multipleChoice') {
-                     document.querySelectorAll(`input[name="exercise${exerciseIndex}"]`).forEach(radio => radio.disabled = true);
-                 } else if (exerciseType === 'fillInTheBlank') {
-                      const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
-                      if (inputElement) inputElement.disabled = true;
-                 }
-
-            } else {
-                feedbackDiv.innerHTML = `<p class="incorrect">Incorrect. The correct answer is: ${correctAnswer}</p>`;
-            }
-        }
-
-
-        function nextLesson() {
-            // We could potentially check if the *next* lesson file exists here
-            // before incrementing, but the 404 check in loadLesson handles it okay.
-            currentLesson++;
-            loadLesson(currentLesson);
-        }
-
-        function previousLesson() {
-            if (currentLesson > 1) {
-                currentLesson--;
-                loadLesson(currentLesson);
-            }
-        }
-
-        // Initial Load on window load
-        window.onload = () => {
-             console.log("Window loaded. Initializing lesson.");
-             loadLesson(currentLesson);
-        };
-    </script>
-    <!-- Do NOT include the puter.js script again here -->
 </body>
 </html>
