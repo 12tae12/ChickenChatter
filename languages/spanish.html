@@ -606,7 +606,7 @@
         }
 
         // Initial Load on window load
-        window.onload = () => {
+        /*window.onload = () => {
              console.log("Window loaded. Initializing page.");
 
              if (typeof puter === 'undefined' || !puter.isInitialized) {
@@ -619,13 +619,40 @@
 
              loadProgress(); // Load progress first
              loadPage(currentPage);
-        };
+        };*/
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM fully loaded and parsed. Initializing page.");
+
+            if (typeof puter === 'undefined' || !puter.isInitialized) {
+                console.warn("Putter.js is not initialized.  AI features may not work.  Ensure you are logged in.");
+                const pageContentDiv = document.getElementById('pageContent');
+                if (pageContentDiv) {
+                    pageContentDiv.innerHTML = "<p><b>Warning:</b> AI features may not work because Putter.js is not initialized. Ensure you are logged in.</p>";
+                }
+            }
+
+            loadProgress(); // Load progress first
+            loadPage(currentPage);
+        });
 
           // Disable right-click context menu
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
     </script>
+</head>
+
+<body>
+    <div id="pageContainer">
+        <a href="../index.html" class="back-link">&larr; Back to Course Selection</a>
+        <div id="progress"></div>
+        <div id="pageContent"></div>
+        <div id="navigation">
+            <button id="prevButton" onclick="previousPage()">Previous</button>
+            <button id="nextButton" onclick="nextPage()">Next</button>
+        </div>
+    </div>
 </body>
 
 </html>
