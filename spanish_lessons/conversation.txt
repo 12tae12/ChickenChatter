@@ -1,0 +1,26 @@
+¡Hola!
+(Hello!)
+
+¡Hola! ¿Cómo estás?
+(Hi! How are you?)
+
+Bien, gracias. ¿Tienes hambre?
+(Fine, thanks. Are you hungry?)
+
+Sí, mucha hambre. ¿Vamos a un restaurante?
+(Yes, very hungry. Shall we go to a restaurant?)
+
+¡Sí! ¿Qué tipo de comida te apetece?
+(Yes! What kind of food do you feel like?)
+
+Me apetece algo italiano. ¿A ti?
+(I feel like something Italian. You?)
+
+¡Perfecto! Me encanta la pasta. ¿Cuál restaurante prefieres?
+(Perfect! I love pasta. Which restaurant do you prefer?)
+
+¿Qué tal "Bella Italia"? Dicen que es bueno.
+(How about "Bella Italia"? They say it's good.)
+
+¡Suena bien! Vamos.
+(Sounds good! Let's go.)

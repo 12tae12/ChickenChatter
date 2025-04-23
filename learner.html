@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chicken Chatter - Spanish Course</title>
+    <style>
+        /* Basic styling, can be improved */
+        body { font-family: sans-serif; }
+        #lessonContent { margin-top: 20px; }
+        .exercise { margin-bottom: 20px; }
+        .question { font-weight: bold; }
+        .option { margin-bottom: 5px; }
+        .correct { color: green; }
+        .incorrect { color: red; }
+    </style>
+    <script src="https://js.puter.com/v2/"></script>
+    <script>
+        let currentLesson = 1;
+        const lessonDirectory = "spanish_lessons/";
+        const conversationInterval = 7; // Trigger conversation every 7 lessons
+
+        async function loadLesson(lessonNumber) {
+            let lessonFile;
+
+            if (lessonNumber % conversationInterval === 0) {
+                lessonFile = lessonDirectory + "conversation.txt"; // Placeholder for conversation
+            } else {
+                lessonFile = lessonDirectory + "lesson" + lessonNumber + ".json"; // Load JSON lessons
+            }
+
+            try {
+                const response = await fetch(lessonFile);
+                if (!response.ok) {
+                    throw new Error(`Failed to load lesson ${lessonNumber}`);
+                }
+
+                if (lessonFile.endsWith('.json')) {
+                  const lessonData = await response.json();
+                  processLesson(lessonData);
+                } else {
+                  const lessonPrompt = await response.text();
+                  processLesson(lessonPrompt); // Process text-based conversation
+                }
+
+
+            } catch (error) {
+                console.error("Error loading lesson:", error);
+                document.getElementById('lessonContent').innerHTML = "<p>Error loading lesson.</p>";
+            }
+        }
+
+        async function processLesson(lessonData) {
+            const lessonContentDiv = document.getElementById('lessonContent');
+            lessonContentDiv.innerHTML = ''; // Clear previous content
+            if (typeof lessonData === 'string') {
+               //Handle Conversation
+               puter.ai.chat(lessonData).then(aiResponse => {
+                displayLessonContent(aiResponse);
+               }).catch(error => {
+                    console.error("Error processing lesson with AI:", error);
+                    displayLessonContent("Error generating content.");
+                });
+
+            } else if (typeof lessonData === 'object') {
+                // Process JSON lesson
+
+                if (lessonData.vocabulary) {
+                  lessonContentDiv.innerHTML += "<h3>Vocabulary</h3>";
+                    lessonData.vocabulary.forEach(vocab => {
+                        lessonContentDiv.innerHTML += `<p><b>${vocab.word}:</b> ${vocab.definition}</p>`;
+                    });
+                }
+
+                if (lessonData.grammar) {
+                    lessonContentDiv.innerHTML += "<h3>Grammar</h3>";
+                    lessonData.grammar.forEach(grammar => {
+                        lessonContentDiv.innerHTML += `<p><b>${grammar.title}:</b> ${grammar.explanation}</p>`;
+                    });
+                }
+
+                if (lessonData.exercises) {
+                    lessonContentDiv.innerHTML += "<h3>Exercises</h3>";
+                    lessonData.exercises.forEach((exercise, index) => {
+                        lessonContentDiv.innerHTML += `<div class="exercise" id="exercise${index}">`;
+                        lessonContentDiv.innerHTML += `<p class="question">${exercise.question}</p>`;
+
+                        if (exercise.type === 'multipleChoice') {
+                            exercise.options.forEach((option, optionIndex) => {
+                                lessonContentDiv.innerHTML += `
+                                    <div class="option">
+                                        <input type="radio" id="exercise${index}Option${optionIndex}" name="exercise${index}" value="${optionIndex}">
+                                        <label for="exercise${index}Option${optionIndex}">${option}</label>
+                                    </div>
+                                `;
+                            });
+                        } else if (exercise.type === 'fillInTheBlank') {
+                            lessonContentDiv.innerHTML += `<input type="text" id="exercise${index}Answer">`;
+                        }
+                        lessonContentDiv.innerHTML += `<button onclick="checkExercise(${index}, ${JSON.stringify(exercise)})">Check</button>`;
+                        lessonContentDiv.innerHTML += '</div>';
+                    });
+                }
+            } else {
+                 displayLessonContent("Invalid lesson format.");
+            }
+        }
+
+        function checkExercise(exerciseIndex, exercise) {
+            let userAnswer;
+            if (exercise.type === 'multipleChoice') {
+                userAnswer = document.querySelector(`input[name="exercise${exerciseIndex}"]:checked`)?.value;
+            } else if (exercise.type === 'fillInTheBlank') {
+                userAnswer = document.getElementById(`exercise${exerciseIndex}Answer`).value;
+            }
+
+            const exerciseDiv = document.getElementById(`exercise${exerciseIndex}`);
+            exerciseDiv.querySelectorAll('.correct, .incorrect').forEach(el => el.remove()); // Clear previous feedback
+
+            if (userAnswer != null && exercise.correctAnswer == userAnswer) {
+                exerciseDiv.innerHTML += '<p class="correct">Correct!</p>';
+            } else if (exercise.type === 'multipleChoice' && exercise.correctAnswer != userAnswer) {
+                exerciseDiv.innerHTML += `<p class="incorrect">Incorrect. The correct answer is: ${exercise.options[exercise.correctAnswer]}</p>`;
+            } else if (exercise.type === 'fillInTheBlank' && userAnswer !== exercise.correctAnswer) {
+                exerciseDiv.innerHTML += `<p class="incorrect">Incorrect. The correct answer is: ${exercise.correctAnswer}</p>`;
+            }
+        }
+
+        function displayLessonContent(content) {
+            const lessonContentDiv = document.getElementById('lessonContent');
+            lessonContentDiv.innerHTML = `<p>${content}</p>`; // Basic display
+        }
+
+        function nextLesson() {
+            currentLesson++;
+            loadLesson(currentLesson);
+        }
+
+        function previousLesson() {
+            if (currentLesson > 1) {
+                currentLesson--;
+                loadLesson(currentLesson);
+            }
+        }
+
+        window.onload = () => {
+            loadLesson(currentLesson); // Load the first lesson on page load
+        };
+    </script>
+</head>
+<body>
+    <h1>Spanish Course</h1>
+    <div id="lessonContent">
+        <p>Loading lesson...</p>
+    </div>
+    <button onclick="previousLesson()">Previous Lesson</button>
+    <button onclick="nextLesson()">Next Lesson</button>
+    <script src="https://js.puter.com/v2/"></script>
+</body>
+</html>

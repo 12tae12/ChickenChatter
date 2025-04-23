@@ -1,0 +1,43 @@
+{
+  "vocabulary": [
+    {
+      "word": "Uno",
+      "definition": "One"
+    },
+    {
+      "word": "Dos",
+      "definition": "Two"
+    },
+     {
+      "word": "Tres",
+      "definition": "Three"
+    },
+    {
+      "word": "Cuatro",
+      "definition": "Four"
+    },
+     {
+      "word": "Cinco",
+      "definition": "Five"
+    }
+  ],
+  "grammar": [
+    {
+      "title": "Numbers 1-5",
+      "explanation": "Basic numbers in Spanish."
+    }
+  ],
+  "exercises": [
+    {
+      "type": "multipleChoice",
+      "question": "What is 'Tres'?",
+      "options": ["One", "Two", "Three", "Four"],
+      "correctAnswer": 2
+    },
+      {
+      "type": "fillInTheBlank",
+      "question": "____ is the number two.",
+      "correctAnswer": "Dos"
+    }
+  ]
+}

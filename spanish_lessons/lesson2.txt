@@ -1,0 +1,121 @@
+# Restaurant Conversation Example
+
+# English
+# Hello, welcome to our restaurant!
+Hello, welcome to our restaurant!
+
+# Spanish Translation:
+# Hola, ¡bienvenido a nuestro restaurante!
+
+# Explanation:
+# - Hola: Hello
+# - bienvenido: welcome (masculine singular)
+# - a: to
+# - nuestro: our
+# - restaurante: restaurant
+# - ¡!: exclamation mark
+
+# English
+# Good evening, table for one, please.
+Good evening, table for one, please.
+
+# Spanish Translation:
+# Buenas noches, una mesa para uno, por favor.
+
+# Explanation:
+# - Buenas noches: Good evening
+# - una mesa: a table
+# - para: for
+# - uno: one (masculine)
+# - por favor: please
+
+# English
+# Here is the menu.  What would you like to order?
+Here is the menu. What would you like to order?
+
+# Spanish Translation:
+# Aquí está el menú. ¿Qué le gustaría pedir?
+
+# Explanation:
+# - Aquí está: Here is
+# - el menú: the menu
+# - ¿Qué?: What?
+# - le gustaría: would you like (formal)
+# - pedir: to order
+
+# English
+# I would like the steak, please.
+I would like the steak, please.
+
+# Spanish Translation:
+# Me gustaría el bistec, por favor.
+
+# Explanation:
+# - Me gustaría: I would like
+# - el bistec: the steak
+# - por favor: please
+
+# English
+# And to drink?
+And to drink?
+
+# Spanish Translation:
+# ¿Y para beber?
+
+# Explanation:
+# - ¿Y?: And?
+# - para: for
+# - beber: to drink
+
+# English
+# I'll have water.
+I'll have water.
+
+# Spanish Translation:
+# Tomaré agua.
+
+# Explanation:
+# - Tomaré: I will take/have
+# - agua: water
+
+# English
+# Enjoy your meal!
+Enjoy your meal!
+
+# Spanish Translation:
+# ¡Que aproveche!
+
+# Explanation:
+# - ¡Que aproveche!: Enjoy your meal! (literally: May it profit you!)
+
+# English
+# Can I have the check, please?
+Can I have the check, please?
+
+# Spanish Translation:
+# ¿Me puede traer la cuenta, por favor?
+
+# Explanation:
+# - ¿Me puede traer?: Can you bring me? (formal)
+# - la cuenta: the check
+# - por favor: please
+
+# English
+# Certainly!
+Certainly!
+
+# Spanish Translation:
+# ¡Claro!
+
+# Explanation:
+# - ¡Claro!: Certainly! / Sure!
+
+# English
+# Thank you!
+Thank you!
+
+# Spanish Translation:
+# ¡Gracias!
+
+# Explanation:
+# - ¡Gracias!: Thank you!

@@ -1,0 +1,12 @@
+Translate the following sentence: 'Hello, how are you?' Provide the Spanish translation, and give a few alternative ways to say it.
+
+Spanish translation:
+*   Hola, ¿cómo estás? (Informal, singular)
+*   Hola, ¿cómo está? (Formal, singular)
+*   Hola, ¿cómo están? (Informal/Formal, plural)
+
+Alternative ways to say it:
+*   ¿Qué tal? (Informal, meaning "What's up?")
+*   ¿Cómo te va? (Informal, meaning "How's it going?")
+*   ¿Cómo le va? (Formal, meaning "How's it going?")
+*   Buenos días/tardes/noches. (Good morning/afternoon/evening - can be used as a greeting)

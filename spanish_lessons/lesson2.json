@@ -1,0 +1,44 @@
+{
+  "vocabulary": [
+    {
+      "word": "¿Cómo estás?",
+      "definition": "How are you?"
+    },
+    {
+      "word": "Bien",
+      "definition": "Good"
+    },
+    {
+      "word": "Gracias",
+      "definition": "Thank you"
+    },
+     {
+      "word": "De nada",
+      "definition": "You're welcome"
+    }
+  ],
+  "grammar": [
+    {
+      "title": "Basic Phrases",
+      "explanation": "Common phrases for greetings and responding. 'Bien' means good, and is a common response to '¿Cómo estás?'"
+    }
+  ],
+  "exercises": [
+    {
+      "type": "multipleChoice",
+      "question": "What does '¿Cómo estás?' mean?",
+      "options": ["Hello", "How are you?", "Goodbye", "Thank you"],
+      "correctAnswer": 1
+    },
+      {
+      "type": "fillInTheBlank",
+      "question": "____ is 'Thank you' in Spanish.",
+      "correctAnswer": "Gracias"
+    },
+     {
+      "type": "fillInTheBlank",
+      "question": "The response to gracias is ____.",
+      "correctAnswer": "De nada"
+    }
+  ]
+}
