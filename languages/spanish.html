@@ -227,6 +227,14 @@
             font-size: 1em;
             margin: 3px;
             cursor: pointer;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        #spanishKeyboard button:hover {
+            background-color: #dbeafe;
         }
 
         /* Hide content initially */
@@ -245,281 +253,293 @@
     <!-- Load Putter.js script ONCE in the head -->
     <script src="https://js.puter.com/v2/" defer></script>
     <script>
-          // Character mapping for keyboard variations
-          const charMap = {
-              'á': 'a',
-              'é': 'e',
-              'í': 'i',
-              'ó': 'o',
-              'ú': 'u',
-              'ü': 'u',
-              'Á': 'a',
-              'É': 'e',
-              'Í': 'i',
-              'Ó': 'o',
-              'Ú': 'u',
-              'Ü': 'u',
-              '¿': '?',
-              '¡': '!',
-              'ñ': 'n',
-              'Ñ': 'N' // Add more as needed
-          };
+        // Character mapping for keyboard variations
+        const charMap = {
+            'á': 'a',
+            'é': 'e',
+            'í': 'i',
+            'ó': 'o',
+            'ú': 'u',
+            'ü': 'u',
+            'Á': 'a',
+            'É': 'e',
+            'Í': 'i',
+            'Ó': 'o',
+            'Ú': 'u',
+            'Ü': 'u',
+            '¿': '?',
+            '¡': '!',
+            'ñ': 'n',
+            'Ñ': 'N' // Add more as needed
+        };
 
-          let currentPage = 1;
-          const pageDirectory = "spanish_pages/";
-          const conversationInterval = 7; // Trigger conversation every 7 pages
-          let totalPages = 5; // Keep track of available pages (Update this manually or dynamically)
-          let completedPages = {}; // Object to store completed pages
-          let savedAnswers = {}; // Object to store saved answers
-          let exercisesVisible = false; // Track if exercises are visible
+        const spanishChars = [
+            'á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'
+        ];
 
-          // Function to save progress
-          function saveProgress() {
-              localStorage.setItem('spanishCourseProgress', JSON.stringify(completedPages));
-              localStorage.setItem('spanishCourseAnswers', JSON.stringify(savedAnswers)); // Save answers
-          }
+        let currentPage = 1;
+        const pageDirectory = "spanish_pages/";
+        const conversationInterval = 7; // Trigger conversation every 7 pages
+        let totalPages = 5; // Keep track of available pages (Update this manually or dynamically)
+        let completedPages = {}; // Object to store completed pages
+        let savedAnswers = {}; // Object to store saved answers
+        let exercisesVisible = false; // Track if exercises are visible
 
-          // Function to load progress
-          function loadProgress() {
-              const progressString = localStorage.getItem('spanishCourseProgress');
-              if (progressString) {
-                  try {
-                      completedPages = JSON.parse(progressString);
-                      console.log("Loaded progress:", completedPages);
-                  } catch (error) {
-                      console.error("Error parsing progress:", error);
-                      completedPages = {}; // Reset if parsing fails
-                  }
-              } else {
-                  completedPages = {};
-              }
+        // Function to save progress
+        function saveProgress() {
+            localStorage.setItem('spanishCourseProgress', JSON.stringify(completedPages));
+            localStorage.setItem('spanishCourseAnswers', JSON.stringify(savedAnswers)); // Save answers
+        }
 
-              // Load saved answers
-              const answersString = localStorage.getItem('spanishCourseAnswers');
-              if (answersString) {
-                  try {
-                      savedAnswers = JSON.parse(answersString);
-                      console.log("Loaded saved answers:", savedAnswers);
-                  } catch (error) {
-                      console.error("Error parsing saved answers:", error);
-                      savedAnswers = {};
-                  }
-              } else {
-                  savedAnswers = {};
-              }
-              updateProgressDisplay(); // Update the display immediately after loading
-          }
+        // Function to load progress
+        function loadProgress() {
+            const progressString = localStorage.getItem('spanishCourseProgress');
+            if (progressString) {
+                try {
+                    completedPages = JSON.parse(progressString);
+                    console.log("Loaded progress:", completedPages);
+                } catch (error) {
+                    console.error("Error parsing progress:", error);
+                    completedPages = {}; // Reset if parsing fails
+                }
+            } else {
+                completedPages = {};
+            }
 
-          // Function to update navigation button states
-          function updateNavButtons() {
-              document.getElementById('prevButton').disabled = (currentPage <= 1);
-              document.getElementById('nextButton').disabled = (currentPage >= totalPages);
-          }
+            // Load saved answers
+            const answersString = localStorage.getItem('spanishCourseAnswers');
+            if (answersString) {
+                try {
+                    savedAnswers = JSON.parse(answersString);
+                    console.log("Loaded saved answers:", savedAnswers);
+                } catch (error) {
+                    console.error("Error parsing saved answers:", error);
+                    savedAnswers = {};
+                }
+            } else {
+                savedAnswers = {};
+            }
+            updateProgressDisplay(); // Update the display immediately after loading
+        }
 
-          // Function to update the progress display
-          function updateProgressDisplay() {
-              const progressDisplay = document.getElementById('progress');
-              if (progressDisplay) {
-                  const completedCount = Object.keys(completedPages).length;
-                  progressDisplay.textContent = `Progress: ${completedCount} / ${totalPages} pages completed`;
-              }
-          }
+        // Function to update navigation button states
+        function updateNavButtons() {
+            document.getElementById('prevButton').disabled = (currentPage <= 1);
+            document.getElementById('nextButton').disabled = (currentPage >= totalPages);
+        }
 
-          // Function to speak the given text
-          function speak(text, lang = 'es-ES') {
-              if ('speechSynthesis' in window) {
-                  const utterance = new SpeechSynthesisUtterance(text);
-                  utterance.lang = lang;
-                  speechSynthesis.speak(utterance);
-              } else {
-                  console.warn('Speech synthesis is not supported in this browser.');
-              }
-          }
+        // Function to update the progress display
+        function updateProgressDisplay() {
+            const progressDisplay = document.getElementById('progress');
+            if (progressDisplay) {
+                const completedCount = Object.keys(completedPages).length;
+                progressDisplay.textContent = `Progress: ${completedCount} / ${totalPages} pages completed`;
+            }
+        }
 
-          // Function to insert a character from the on-screen keyboard
-          function insertChar(char, exerciseIndex) {
-              const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
-              if (inputElement) {
-                  inputElement.value += char;
-                  // Trigger input event for saving
-                  inputElement.dispatchEvent(new Event('input', {
-                      bubbles: true
-                  }));
-              }
-          }
+        // Function to speak the given text
+        function speak(text, lang = 'es-ES') {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                speechSynthesis.speak(utterance);
+            } else {
+                console.warn('Speech synthesis is not supported in this browser.');
+            }
+        }
 
-          function showExercises() {
-              exercisesVisible = true;
-              document.getElementById('lessonContent').style.display = 'none';
-              document.getElementById('exercisesContainer').style.display = 'block';
-          }
+        // Function to render the Spanish keyboard for a specific input
+        function renderSpanishKeyboard(exerciseIndex) {
+            let html = '';
+            spanishChars.forEach(char => {
+                html += `<button type="button" onclick="insertChar('${char}', ${exerciseIndex})">${char}</button>`;
+            });
+            return html;
+        }
+
+        // Update: Insert character at cursor position for better UX
+        function insertChar(char, exerciseIndex) {
+            const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
+            if (inputElement) {
+                const start = inputElement.selectionStart;
+                const end = inputElement.selectionEnd;
+                const value = inputElement.value;
+                inputElement.value = value.slice(0, start) + char + value.slice(end);
+                // Move cursor after inserted char
+                inputElement.selectionStart = inputElement.selectionEnd = start + char.length;
+                // Trigger input event for saving
+                inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+                inputElement.focus();
+            }
+        }
+
+        function showExercises() {
+            exercisesVisible = true;
+            document.getElementById('lessonContent').style.display = 'none';
+            document.getElementById('exercisesContainer').style.display = 'block';
+        }
+
+        async function loadPage(pageNumber) {
+            console.log(`Loading page ${pageNumber}`);
+
+            let pageFile;
+            let isConversation = false;
+
+            if (pageNumber % conversationInterval === 0) {
+                pageFile = pageDirectory + "conversation.txt";
+                isConversation = true;
+                console.log("Loading conversation file:", pageFile);
+            } else {
+                pageFile = pageDirectory + "page" + pageNumber + ".json";
+                console.log("Loading JSON page file:", pageFile);
+            }
+
+            try {
+
+                const response = await fetch(pageFile);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        document.getElementById('pageContent').innerHTML = `<p>Page ${pageNumber} not found. You might be at the end!</p>`;
+                        totalPages = pageNumber - 1;
+                        updateNavButtons();
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status} for ${pageFile}`);
+                }
+
+                let pageData;
+                if (isConversation) {
+                    const pagePrompt = await response.text();
+                    processConversation(pagePrompt);
+                } else {
+                    pageData = await response.json();
+                    processJsonPage(pageData);
+                }
+
+                updateNavButtons();
+                updateProgressDisplay();
+
+            } catch (error) {
+                console.error("Error loading or parsing page:", error);
+                document.getElementById('pageContent').innerHTML = `<p>Error loading page ${pageNumber}. Please check the console for details.</p>`;
+                updateNavButtons();
+            }
+        }
+
+        async function processConversation(prompt) {
+            console.log("Processing conversation prompt...");
+            const pageContentDiv = document.getElementById('pageContent');
+            pageContentDiv.innerHTML = '<p>Generating conversation...</p>';
+            try {
+                const aiResponse = await puter.ai.chat(prompt);
+                pageContentDiv.innerHTML = `<p>${aiResponse}</p>`;
+                console.log("AI Response:", aiResponse);
+            } catch (error) {
+                console.error("Error processing conversation with AI:", error);
+                pageContentDiv.innerHTML = "<p>Error generating AI content. Check console.</p>";
+                if (error && error.message && error.message.includes('401')) {
+                    pageContentDiv.innerHTML += "<p><i>(Authentication error with Putter.js. Ensure you are logged in or the service is configured correctly.)</i></p>";
+                }
+            }
+        }
+
+        function processJsonPage(pageData) {
+            console.log("Processing JSON page:", pageData);
+            try {
+                const pageContentDiv = document.getElementById('pageContent');
+
+                if (!pageContentDiv) {
+                    console.error("pageContentDiv is null.  Check if the element exists in the DOM.");
+                    return; // Exit the function if pageContentDiv is null
+                }
+
+                pageContentDiv.innerHTML = '';
+
+                // Create lesson and exercise containers
+                const lessonContentDiv = document.createElement('div');
+                lessonContentDiv.id = 'lessonContent';
+
+                const exercisesContainer = document.createElement('div');
+                exercisesContainer.id = 'exercisesContainer';
+                exercisesContainer.style.display = 'none'; // Initially hide exercises
 
 
-          async function loadPage(pageNumber) {
-               console.log(`Loading page ${pageNumber}`);
+                let vocabHtml = "";
+                let grammarHtml = "";
+                let exercisesHtml = "";
+                try {
+                    // Display Vocabulary, Grammar as before
+                    if (pageData.vocabulary) {
+                        vocabHtml = "<h3>Vocabulary</h3>";
+                        pageData.vocabulary.forEach(vocab => {
+                            vocabHtml += `
+                                <div class="vocab-item">
+                                    <p><b>${vocab.word}:</b> ${vocab.definition}</p>
+                                    <button class="speak-button" onclick="speak('${vocab.word}')">Speak</button>
+                                </div>
+                            `;
+                        });
+                        lessonContentDiv.innerHTML += vocabHtml;
+                    }
 
-               let pageFile;
-               let isConversation = false;
+                    if (pageData.grammar) {
+                        grammarHtml = "<h3>Grammar</h3>";
+                        pageData.grammar.forEach(grammar => `<div class="grammar-item"><p><b>${grammar.title}:</b> ${grammar.explanation}</p></div>`);
+                        lessonContentDiv.innerHTML += grammarHtml;
+                    }
 
-               if (pageNumber % conversationInterval === 0) {
-                   pageFile = pageDirectory + "conversation.txt";
-                   isConversation = true;
-                    console.log("Loading conversation file:", pageFile);
-               } else {
-                   pageFile = pageDirectory + "page" + pageNumber + ".json";
-                    console.log("Loading JSON page file:", pageFile);
-               }
+                    lessonContentDiv.innerHTML += `<button onclick="showExercises()">Start Exercises</button>`;
 
-               try {
+                    //Append lesson content to the page
+                    pageContentDiv.appendChild(lessonContentDiv);
 
-                   const response = await fetch(pageFile);
-                   if (!response.ok) {
-                       if (response.status === 404) {
-                           document.getElementById('pageContent').innerHTML = `<p>Page ${pageNumber} not found. You might be at the end!</p>`;
-                           totalPages = pageNumber - 1;
-                           updateNavButtons();
-                           return;
-                       }
-                       throw new Error(`HTTP error! status: ${response.status} for ${pageFile}`);
-                   }
+                    if (pageData.exercises && Array.isArray(pageData.exercises)) {
+                        exercisesHtml = "<h3>Exercises</h3>";
 
-                   let pageData;
-                   if (isConversation) {
-                       const pagePrompt = await response.text();
-                       processConversation(pagePrompt);
-                   } else {
-                       pageData = await response.json();
-                       processJsonPage(pageData);
-                   }
+                        pageData.exercises.forEach((exercise, index) => {
+                            const safeQuestion = exercise.question.replace(/"/g, '&quot;');
+                            exercisesHtml += `<div class="exercise" id="exercise${index}">`;
+                            exercisesHtml += `<p class="question">${safeQuestion}</p>`;
 
-                   updateNavButtons();
-                   updateProgressDisplay();
+                            if (exercise.type === 'multipleChoice' && Array.isArray(exercise.options)) {
+                                const shuffledOptions = [...exercise.options].sort(() => Math.random() - 0.5);
+                                shuffledOptions.forEach((option, optionIndex) => {
+                                    const safeOption = option.replace(/"/g, '&quot;');
+                                    exercisesHtml += `
+                                        <div class="option">
+                                            <input type="radio" id="exercise${index}Option${optionIndex}" name="exercise${index}" value="${safeOption}">
+                                            <label for="exercise${index}Option${optionIndex}">${option}</label>
+                                        </div>
+                                    `;
+                                });
+                            } else if (exercise.type === 'fillInTheBlank') {
+                                const savedAnswer = savedAnswers[currentPage + '-' + index] || ''; // Retrieve saved answer
+                                exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer" value="${savedAnswer}" oninput="saveAnswer(${currentPage}, ${index}, this.value)">`;
+                                // Render Spanish keyboard for this input
+                                exercisesHtml += `<div id="spanishKeyboard">${renderSpanishKeyboard(index)}</div>`;
+                            }
 
-               } catch (error) {
-                   console.error("Error loading or parsing page:", error);
-                   document.getElementById('pageContent').innerHTML = `<p>Error loading page ${pageNumber}. Please check the console for details.</p>`;
-                   updateNavButtons();
-               }
-          }
-
-          async function processConversation(prompt) {
-               console.log("Processing conversation prompt...");
-               const pageContentDiv = document.getElementById('pageContent');
-               pageContentDiv.innerHTML = '<p>Generating conversation...</p>';
-               try {
-                   const aiResponse = await puter.ai.chat(prompt);
-                   pageContentDiv.innerHTML = `<p>${aiResponse}</p>`;
-                   console.log("AI Response:", aiResponse);
-               } catch (error) {
-                   console.error("Error processing conversation with AI:", error);
-                   pageContentDiv.innerHTML = "<p>Error generating AI content. Check console.</p>";
-                   if (error && error.message && error.message.includes('401')) {
-                       pageContentDiv.innerHTML += "<p><i>(Authentication error with Putter.js. Ensure you are logged in or the service is configured correctly.)</i></p>";
-                   }
-               }
-          }
-
-          // Renamed from processJsonLesson
-          function processJsonPage(pageData) {
-               console.log("Processing JSON page:", pageData);
-               try {
-                   const pageContentDiv = document.getElementById('pageContent');
-
-                   if (!pageContentDiv) {
-                       console.error("pageContentDiv is null.  Check if the element exists in the DOM.");
-                       return; // Exit the function if pageContentDiv is null
-                   }
-
-                   pageContentDiv.innerHTML = '';
-
-                   // Create lesson and exercise containers
-                   const lessonContentDiv = document.createElement('div');
-                   lessonContentDiv.id = 'lessonContent';
-
-                   const exercisesContainer = document.createElement('div');
-                   exercisesContainer.id = 'exercisesContainer';
-                   exercisesContainer.style.display = 'none'; // Initially hide exercises
-
-
-                    let vocabHtml = "";
-                    let grammarHtml = "";
-                    let exercisesHtml = "";
-                   try {
-                       // Display Vocabulary, Grammar as before
-                       if (pageData.vocabulary) {
-                            vocabHtml = "<h3>Vocabulary</h3>";
-                           pageData.vocabulary.forEach(vocab => {
-                               vocabHtml += `
-                                    <div class="vocab-item">
-                                        <p><b>${vocab.word}:</b> ${vocab.definition}</p>
-                                        <button class="speak-button" onclick="speak('${vocab.word}')">Speak</button>
-                                    </div>
-                                `;
-                           });
-                           lessonContentDiv.innerHTML += vocabHtml;
-                       }
-
-                       if (pageData.grammar) {
-                            grammarHtml = "<h3>Grammar</h3>";
-                           pageData.grammar.forEach(grammar => `<div class="grammar-item"><p><b>${grammar.title}:</b> ${grammar.explanation}</p></div>`);
-                           lessonContentDiv.innerHTML += grammarHtml;
-                       }
-
-                         lessonContentDiv.innerHTML += `<button onclick="showExercises()">Start Exercises</button>`;
-
-                         //Append lesson content to the page
-                         pageContentDiv.appendChild(lessonContentDiv);
-
-                        if (pageData.exercises && Array.isArray(pageData.exercises)) {
-                            exercisesHtml = "<h3>Exercises</h3>";
-
-                            pageData.exercises.forEach((exercise, index) => {
-                                const safeQuestion = exercise.question.replace(/"/g, '&quot;');
-                                exercisesHtml += `<div class="exercise" id="exercise${index}">`;
-                                exercisesHtml += `<p class="question">${safeQuestion}</p>`;
-
-                                if (exercise.type === 'multipleChoice' && Array.isArray(exercise.options)) {
-                                    const shuffledOptions = [...exercise.options].sort(() => Math.random() - 0.5);
-                                    shuffledOptions.forEach((option, optionIndex) => {
-                                        const safeOption = option.replace(/"/g, '&quot;');
-                                        exercisesHtml += `
-                                            <div class="option">
-                                                <input type="radio" id="exercise${index}Option${optionIndex}" name="exercise${index}" value="${safeOption}">
-                                                <label for="exercise${index}Option${optionIndex}">${option}</label>
-                                            </div>
-                                        `;
-                                    });
-                                } else if (exercise.type === 'fillInTheBlank') {
-                                    const savedAnswer = savedAnswers[currentPage + '-' + index] || ''; // Retrieve saved answer
-                                    exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer" value="${savedAnswer}" oninput="saveAnswer(${currentPage}, ${index}, this.value)">`;
-                                }
-
-                                const correctAnswer = exercise.correctAnswer.replace(/"/g, '&quot;');
-                                exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer}">Check</button>`;
-                                exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`;
-                                exercisesHtml += '</div>';
-                            });
-
-                            exercisesHtml += '<div id="spanishKeyboard">';
-                            exercisesHtml += '<button onclick="insertChar(\'ñ\', 0)">ñ</button>';
-                            exercisesHtml += '<button onclick="insertChar(\'¿\', 0)">¿</button>';
-                            exercisesHtml += '<button onclick="insertChar(\'¡\', 0)">¡</button>';
+                            const correctAnswer = exercise.correctAnswer.replace(/"/g, '&quot;');
+                            exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer}">Check</button>`;
+                            exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`;
                             exercisesHtml += '</div>';
-                            exercisesContainer.innerHTML = exercisesHtml;
+                        });
 
-                        }
+                        exercisesContainer.innerHTML = exercisesHtml;
 
-                         pageContentDiv.appendChild(exercisesContainer);
+                    }
 
-                   } catch (error) {
-                        console.error("Error rendering page content:", error);
-                        pageContentDiv.innerHTML = '<p>Error displaying page content.</p>';
-                   }
-               } catch (overallError) {
-                   console.error("Error in processJsonPage:", overallError);
-                   document.getElementById('pageContent').innerHTML = `<p>Error processing page.  See console for details.</p>`;
-               }
-          }
+                    pageContentDiv.appendChild(exercisesContainer);
+
+                } catch (error) {
+                    console.error("Error rendering page content:", error);
+                    pageContentDiv.innerHTML = '<p>Error displaying page content.</p>';
+                }
+            } catch (overallError) {
+                console.error("Error in processJsonPage:", overallError);
+                document.getElementById('pageContent').innerHTML = `<p>Error processing page.  See console for details.</p>`;
+            }
+        }
 
         // checkExercise function remains largely the same
         function checkExercise(exerciseIndex, exerciseType, buttonElement) {
@@ -535,26 +555,26 @@
                 if (selectedOption) {
                     userAnswer = selectedOption.value;
                     if (cleanString(userAnswer) === cleanString(correctAnswer)) {
-                       isCorrect = true;
+                        isCorrect = true;
                     }
                 } else {
                     userAnswer = null;
                 }
             } else if (exerciseType === 'fillInTheBlank') {
-                 const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
-                 if (inputElement) {
+                const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
+                if (inputElement) {
                     userAnswer = inputElement.value.trim();
                     if (cleanString(userAnswer) === cleanString(correctAnswer)) {
                         isCorrect = true;
                     }
-                 } else {
-                      userAnswer = null;
-                 }
+                } else {
+                    userAnswer = null;
+                }
             }
 
             if (userAnswer === null) {
-                 feedbackDiv.innerHTML = `<p class="incorrect">Please select or enter an answer.</p>`;
-                 return;
+                feedbackDiv.innerHTML = `<p class="incorrect">Please select or enter an answer.</p>`;
+                return;
             }
 
             if (isCorrect) {
@@ -563,13 +583,14 @@
                 if (!completedPages[currentPage]) {
                     completedPages[currentPage] = true; // Mark page as complete
                     saveProgress(); // Save progress immediately
+                    updateProgressDisplay(); // Update progress bar immediately
                 }
-                 if (exerciseType === 'multipleChoice') {
-                     document.querySelectorAll(`input[name="exercise${exerciseIndex}"]`).forEach(radio => radio.disabled = true);
-                 } else if (exerciseType === 'fillInTheBlank') {
-                      const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
-                      if (inputElement) inputElement.disabled = true;
-                 }
+                if (exerciseType === 'multipleChoice') {
+                    document.querySelectorAll(`input[name="exercise${exerciseIndex}"]`).forEach(radio => radio.disabled = true);
+                } else if (exerciseType === 'fillInTheBlank') {
+                    const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
+                    if (inputElement) inputElement.disabled = true;
+                }
             } else {
                 feedbackDiv.innerHTML = `<p class="incorrect">Incorrect. The correct answer is: ${correctAnswer}</p>`;
             }
@@ -581,13 +602,21 @@
             saveProgress();
         }
 
-
         // Helper function to clean and normalize strings
         function cleanString(str) {
             if (!str) return '';
             let cleaned = str.toLowerCase();
-            cleaned = cleaned.replace(/[^a-z0-9\s]/g, ''); // Remove punctuation
-            cleaned = cleaned.replace(/[áéíóúü¿¡ñ]/g, char => charMap[char] || char); // Replace accented chars
+            // Replace accented and special Spanish chars with their base equivalents
+            cleaned = cleaned
+                .replace(/[áàäâ]/g, 'a')
+                .replace(/[éèëê]/g, 'e')
+                .replace(/[íìïî]/g, 'i')
+                .replace(/[óòöô]/g, 'o')
+                .replace(/[úùüû]/g, 'u')
+                .replace(/ñ/g, 'n')
+                .replace(/¿/g, '?')
+                .replace(/¡/g, '!')
+                .replace(/[^a-z0-9\s?!]/g, ''); // Remove other punctuation
             return cleaned.trim();
         }
 
@@ -606,21 +635,6 @@
         }
 
         // Initial Load on window load
-        /*window.onload = () => {
-             console.log("Window loaded. Initializing page.");
-
-             if (typeof puter === 'undefined' || !puter.isInitialized) {
-                 console.warn("Putter.js is not initialized.  AI features may not work.  Ensure you are logged in.");
-                 const pageContentDiv = document.getElementById('pageContent');
-                 if (pageContentDiv) {
-                     pageContentDiv.innerHTML = "<p><b>Warning:</b> AI features may not work because Putter.js is not initialized. Ensure you are logged in.</p>";
-                 }
-             }
-
-             loadProgress(); // Load progress first
-             loadPage(currentPage);
-        };*/
-
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM fully loaded and parsed. Initializing page.");
 
@@ -636,7 +650,7 @@
             loadPage(currentPage);
         });
 
-          // Disable right-click context menu
+        // Disable right-click context menu
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
