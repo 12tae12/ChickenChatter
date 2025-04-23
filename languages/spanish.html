@@ -4,73 +4,99 @@
     <meta charset="UTF-8">
     <title>Chicken Chatter - Spanish Course</title>
     <style>
-        /* Styles copied from the previous learner.html, adjust as needed */
+        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 20px;
-            background-color: #f4f4f4;
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
+            background-color: #f9f9f9;
         }
         h1, h3 {
             color: #333;
+            margin-bottom: 15px;
         }
         #pageContainer {
-             background-color: #fff;
-             padding: 20px;
-             border-radius: 8px;
-             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto; /* Center the container */
         }
+        /* Back to Course Selection Link */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        /* Page Content Area */
         #pageContent {
             margin-top: 20px;
         }
+        /* Vocabulary & Grammar */
         .vocab-item, .grammar-item {
-            margin-bottom: 10px;
-            padding-left: 15px;
-            border-left: 3px solid #007bff; /* Accent line */
-        }
-        .exercise {
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
+            margin-bottom: 12px;
+            padding: 12px 15px;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: #f0f8ff; /* Light blue background */
+            border-left: 5px solid #007bff; /* Accent line */
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Vertically align the speak button */
+        }
+        .vocab-item b, .grammar-item b {
+            font-weight: bold;
+            color: #0056b3; /* Darker blue for emphasis */
+        }
+        /* Exercise Styles */
+        .exercise {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
         }
         .question {
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-size: 1.1em;
         }
         .option {
-            margin-bottom: 8px;
-            display: block; /* Ensure options are on separate lines */
+            margin-bottom: 10px;
         }
         .option label {
-            margin-left: 5px;
+            margin-left: 8px;
+            font-size: 1em;
         }
         .exercise input[type="text"] {
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
+            border-radius: 5px;
+            margin-right: 15px;
+            font-size: 1em;
         }
         .exercise button {
-            padding: 8px 15px;
+            padding: 10px 20px;
             background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            margin-left: 5px; /* Add some space if next to input */
+            font-size: 1em;
+            transition: background-color 0.2s ease-in-out;
         }
         .exercise button:hover {
             background-color: #218838;
         }
         .feedback {
-            margin-top: 10px;
+            margin-top: 15px;
             font-weight: bold;
+            font-size: 1em;
         }
         .correct {
             color: green;
@@ -78,37 +104,63 @@
         .incorrect {
             color: red;
         }
+        /* Navigation */
         #navigation {
-            margin-top: 20px;
+            margin-top: 30px;
             text-align: center;
         }
-         #navigation button {
-            padding: 10px 20px;
-            font-size: 16px;
+        #navigation button {
+            padding: 12px 25px;
+            font-size: 1.1em;
             cursor: pointer;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
-            margin: 0 10px;
-         }
-         #navigation button:hover {
-             background-color: #0056b3;
-         }
-         #navigation button:disabled {
-             background-color: #ccc;
-             cursor: not-allowed;
-         }
-         .back-link {
-            display: block;
-            margin-bottom: 15px;
-            color: #007bff;
-            text-decoration: none;
-         }
-         .back-link:hover {
-            text-decoration: underline;
-         }
-
+            border-radius: 6px;
+            margin: 0 15px;
+            transition: background-color 0.2s ease-in-out;
+        }
+        #navigation button:hover {
+            background-color: #0056b3;
+        }
+        #navigation button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+         /* Progress Indicator */
+        #progress {
+            margin-top: 15px;
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+         /* Feedback Section */
+        #feedbackSection {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        #feedbackSection input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 70%; /* Adjust width as needed */
+        }
+        #feedbackSection button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #feedbackSection button:hover {
+            background-color: #0056b3;
+        }
     </style>
     <!-- Load Putter.js script ONCE in the head -->
     <script src="https://js.puter.com/v2/" defer></script>
@@ -121,9 +173,32 @@
         };
 
         let currentPage = 1;
-        const pageDirectory = "spanish_pages/"; // Updated directory name
+        const pageDirectory = "spanish_pages/";
         const conversationInterval = 7; // Trigger conversation every 7 pages
         let totalPages = 3; // Keep track of available pages (Update this manually or dynamically)
+        let completedPages = {}; // Object to store completed pages
+
+        // Function to save progress
+        function saveProgress() {
+            localStorage.setItem('spanishCourseProgress', JSON.stringify(completedPages));
+        }
+
+        // Function to load progress
+        function loadProgress() {
+            const progressString = localStorage.getItem('spanishCourseProgress');
+            if (progressString) {
+                try {
+                    completedPages = JSON.parse(progressString);
+                    console.log("Loaded progress:", completedPages);
+                } catch (error) {
+                    console.error("Error parsing progress:", error);
+                    completedPages = {}; // Reset if parsing fails
+                }
+            } else {
+                completedPages = {};
+            }
+            updateProgressDisplay(); // Update the display immediately after loading
+        }
 
         // Function to update navigation button states
         function updateNavButtons() {
@@ -131,17 +206,27 @@
             document.getElementById('nextButton').disabled = (currentPage >= totalPages);
         }
 
+         // Function to update the progress display
+        function updateProgressDisplay() {
+            const progressDisplay = document.getElementById('progress');
+            if (progressDisplay) {
+                const completedCount = Object.keys(completedPages).length;
+                progressDisplay.textContent = `Progress: ${completedCount} / ${totalPages} pages completed`;
+            }
+        }
+
+
         async function loadPage(pageNumber) {
             console.log(`Loading page ${pageNumber}`);
             let pageFile;
             let isConversation = false;
 
             if (pageNumber % conversationInterval === 0) {
-                pageFile = pageDirectory + "conversation.txt"; // Conversation page
+                pageFile = pageDirectory + "conversation.txt";
                 isConversation = true;
                  console.log("Loading conversation file:", pageFile);
             } else {
-                pageFile = pageDirectory + "page" + pageNumber + ".json"; // Load JSON pages
+                pageFile = pageDirectory + "page" + pageNumber + ".json";
                  console.log("Loading JSON page file:", pageFile);
             }
 
@@ -165,11 +250,10 @@
                     processConversation(pagePrompt);
                 } else {
                     const pageData = await response.json();
-                    // Rename lesson files in the JSON data (optional but good practice)
-                    // This assumes the JSON structure uses 'lesson' keys; update if needed
                     processJsonPage(pageData);
                 }
                 updateNavButtons();
+                updateProgressDisplay(); // Update after successfully loading a page
 
             } catch (error) {
                 console.error("Error loading or parsing page:", error);
@@ -241,7 +325,6 @@
                             exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer">`;
                         }
 
-                        // Pass index and store correct answer securely using data attribute
                         const correctAnswer = exercise.correctAnswer.replace(/"/g, '&quot;');
                         exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer}">Check</button>`;
                         exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`;
@@ -278,7 +361,7 @@
                  const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
                  if (inputElement) {
                     userAnswer = inputElement.value.trim();
-                     if (cleanString(userAnswer) === cleanString(correctAnswer)) {
+                    if (cleanString(userAnswer) === cleanString(correctAnswer)) {
                         isCorrect = true;
                     }
                  } else {
@@ -293,7 +376,11 @@
 
             if (isCorrect) {
                 feedbackDiv.innerHTML = '<p class="correct">Correct!</p>';
-                 buttonElement.disabled = true;
+                buttonElement.disabled = true;
+                if (!completedPages[currentPage]) {
+                    completedPages[currentPage] = true; // Mark page as complete
+                    saveProgress(); // Save progress immediately
+                }
                  if (exerciseType === 'multipleChoice') {
                      document.querySelectorAll(`input[name="exercise${exerciseIndex}"]`).forEach(radio => radio.disabled = true);
                  } else if (exerciseType === 'fillInTheBlank') {
@@ -331,6 +418,7 @@
         // Initial Load on window load
         window.onload = () => {
              console.log("Window loaded. Initializing page.");
+             loadProgress(); // Load progress first
              loadPage(currentPage);
         };
 
@@ -339,5 +427,18 @@
             e.preventDefault();
         });
     </script>
-</body>
-</html>
+    <div id="pageContainer">
+        <a class="back-link" href="#">Back to Course Selection</a>
+        <h1>Spanish Course</h1>
+        <div id="pageContent">
+            <!-- Page content will be loaded here -->
+            <p>Loading...</p>
+        </div>
+        <div id="navigation">
+            <button id="prevButton" onclick="previousPage()">Previous</button>
+            <button id="nextButton" onclick="nextPage()">Next</button>
+        </div>
+        <div id="progress">
+            Progress: 0 / 3 pages completed
+        </div>
+    </div>
