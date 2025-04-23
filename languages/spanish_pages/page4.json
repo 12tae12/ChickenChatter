@@ -1,0 +1,47 @@
+{
+  "vocabulary": [
+    {
+      "word": "Ser",
+      "definition": "To be (permanent characteristics)"
+    },
+    {
+      "word": "Yo soy",
+      "definition": "I am"
+    },
+    {
+      "word": "Tú eres",
+      "definition": "You are (informal)"
+    },
+    {
+      "word": "Él/Ella/Usted es",
+      "definition": "He/She/You are (formal)"
+    },
+     {
+      "word": "Nosotros somos",
+      "definition": "We are"
+    },
+    {
+      "word": "Ellos/Ellas/Ustedes son",
+      "definition": "They are/You all are"
+    }
+  ],
+  "grammar": [
+    {
+      "title": "The Verb 'Ser' (to be)",
+      "explanation": "The verb 'ser' is used to describe permanent characteristics, such as identity, origin, profession, and personality."
+    }
+  ],
+  "exercises": [
+    {
+      "type": "multipleChoice",
+      "question": "What is the correct form of 'ser' for 'Yo'?",
+      "options": ["soy", "eres", "es", "son"],
+      "correctAnswer": "soy"
+    },
+    {
+      "type": "fillInTheBlank",
+      "question": "____ médico.",
+      "correctAnswer": "Soy"
+    }
+  ]
+}

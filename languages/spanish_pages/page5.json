@@ -1,0 +1,55 @@
+{
+  "vocabulary": [
+    {
+      "word": "Estar",
+      "definition": "To be (temporary states/location)"
+    },
+    {
+      "word": "Yo estoy",
+      "definition": "I am"
+    },
+    {
+      "word": "Tú estás",
+      "definition": "You are (informal)"
+    },
+    {
+      "word": "Él/Ella/Usted está",
+      "definition": "He/She/You are (formal)"
+    },
+     {
+      "word": "Nosotros estamos",
+      "definition": "We are"
+    },
+    {
+      "word": "Ellos/Ellas/Ustedes están",
+      "definition": "They are/You all are"
+    },
+      {
+      "word": "Bien",
+      "definition": "Good"
+    },
+     {
+      "word": "En",
+      "definition": "In/At"
+    }
+  ],
+  "grammar": [
+    {
+      "title": "The Verb 'Estar' (to be)",
+      "explanation": "The verb 'estar' is used to describe temporary states (feelings, conditions) and location. It is different than ser"
+    }
+  ],
+  "exercises": [
+    {
+      "type": "multipleChoice",
+      "question": "What is the correct form of 'estar' for 'Yo'?",
+      "options": ["soy", "estás", "estoy", "están"],
+      "correctAnswer": "estoy"
+    },
+    {
+      "type": "fillInTheBlank",
+      "question": "Yo ____ en casa.",
+      "correctAnswer": "estoy"
+    }
+  ]
+}
