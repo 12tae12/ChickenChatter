@@ -10,6 +10,9 @@
             line-height: 1.6;
             margin: 20px;
             background-color: #f4f4f4;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
         }
         h1, h3 {
             color: #333;
@@ -109,21 +112,14 @@
     </style>
     <!-- Load Putter.js script ONCE in the head -->
     <script src="https://js.puter.com/v2/" defer></script>
-</head>
-<body>
-    <div id="pageContainer">
-         <a href="../learner.html" class="back-link">&larr; Back to Course Selection</a>
-        <h1>Spanish Course</h1>
-        <div id="pageContent">
-            <p>Loading page...</p>
-        </div>
-        <div id="navigation">
-            <button id="prevButton" onclick="previousPage()" disabled>Previous Page</button>
-            <button id="nextButton" onclick="nextPage()">Next Page</button>
-        </div>
-    </div>
-
     <script>
+        // Character mapping for keyboard variations
+        const charMap = {
+            'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u',
+            'Á': 'a', 'É': 'e', 'Í': 'i', 'Ó': 'o', 'Ú': 'u', 'Ü': 'u',
+            '¿': '?', '¡': '!', 'ñ': 'n', 'Ñ': 'N' // Add more as needed
+        };
+
         let currentPage = 1;
         const pageDirectory = "spanish_pages/"; // Updated directory name
         const conversationInterval = 7; // Trigger conversation every 7 pages
@@ -245,10 +241,11 @@
                             exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer">`;
                         }
 
+                        // Pass index and store correct answer securely using data attribute
                         const correctAnswer = exercise.correctAnswer.replace(/"/g, '&quot;');
                         exercisesHtml += `<button onclick="checkExercise(${index}, '${exercise.type}', this)" data-correct-answer="${correctAnswer}">Check</button>`;
                         exercisesHtml += `<div class="feedback" id="feedback${index}"></div>`;
-                        exercisesHtml += '</div>';
+                        exercisesHtml += '</div>'; // Close exercise div
                     });
                      pageContentDiv.innerHTML += exercisesHtml;
                 }
@@ -271,7 +268,7 @@
                 const selectedOption = document.querySelector(`input[name="exercise${exerciseIndex}"]:checked`);
                 if (selectedOption) {
                     userAnswer = selectedOption.value;
-                    if (userAnswer === correctAnswer) {
+                    if (cleanString(userAnswer) === cleanString(correctAnswer)) {
                        isCorrect = true;
                     }
                 } else {
@@ -281,7 +278,7 @@
                  const inputElement = document.getElementById(`exercise${exerciseIndex}Answer`);
                  if (inputElement) {
                     userAnswer = inputElement.value.trim();
-                    if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                     if (cleanString(userAnswer) === cleanString(correctAnswer)) {
                         isCorrect = true;
                     }
                  } else {
@@ -308,6 +305,15 @@
             }
         }
 
+        // Helper function to clean and normalize strings
+        function cleanString(str) {
+            if (!str) return '';
+            let cleaned = str.toLowerCase();
+            cleaned = cleaned.replace(/[^a-z0-9\s]/g, ''); // Remove punctuation
+            cleaned = cleaned.replace(/[áéíóúü¿¡ñ]/g, char => charMap[char] || char); // Replace accented chars
+            return cleaned.trim();
+        }
+
         // Renamed from nextLesson
         function nextPage() {
             currentPage++;
@@ -327,6 +333,11 @@
              console.log("Window loaded. Initializing page.");
              loadPage(currentPage);
         };
+
+          // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>
