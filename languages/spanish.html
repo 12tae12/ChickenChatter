@@ -295,14 +295,16 @@
             'á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'
         ];
 
-        let currentPage = 1;
+        let currentUnit = 1;
+        let currentLesson = 1;
+        const lessonsPerUnit = 5;
+        let totalUnits = 1; // Will be updated dynamically
+        let totalLessons = 5; // Will be updated dynamically
         const pageDirectory = "spanish_pages/";
-        const conversationInterval = 7; // Trigger conversation every 7 pages
-        // let totalPages = 5; // Keep track of available pages (Update this manually or dynamically)
+        const conversationInterval = 7; // Trigger conversation every 7 lessons
         let completedPages = {}; // Object to store completed pages
         let savedAnswers = {}; // Object to store saved answers
         let exercisesVisible = false; // Track if exercises are visible
-        let totalPages = 5; // Default value, updated dynamically
 
         // Function to save progress
         function saveProgress() {
@@ -341,12 +343,22 @@
             updateProgressDisplay(); // Update the display immediately after loading
         }
 
+        // Function to get the page file for a given unit/lesson
+        function getPageFile(unit, lesson) {
+            if (lesson % conversationInterval === 0) {
+                return { file: pageDirectory + "conversation.txt", isConversation: true };
+            } else {
+                // For now, only unit 1 exists, so always use unit_1/pageX.json
+                return { file: `${pageDirectory}unit_1/page${lesson}.json`, isConversation: false };
+            }
+        }
+
         // Function to update navigation button states
         function updateNavButtons() {
-            document.getElementById('prevButton').disabled = (currentPage <= 1);
-            document.getElementById('nextButton').disabled = (currentPage >= totalPages);
-            document.getElementById('prevButton').setAttribute('aria-disabled', (currentPage <= 1).toString());
-            document.getElementById('nextButton').setAttribute('aria-disabled', (currentPage >= totalPages).toString());
+            document.getElementById('prevButton').disabled = (currentUnit === 1 && currentLesson === 1);
+            document.getElementById('nextButton').disabled = (currentUnit === totalUnits && currentLesson === lessonsPerUnit);
+            document.getElementById('prevButton').setAttribute('aria-disabled', (currentUnit === 1 && currentLesson === 1).toString());
+            document.getElementById('nextButton').setAttribute('aria-disabled', (currentUnit === totalUnits && currentLesson === lessonsPerUnit).toString());
         }
 
         // Function to update the progress display
@@ -354,7 +366,7 @@
             const progressDisplay = document.getElementById('progress');
             if (progressDisplay) {
                 const completedCount = Object.keys(completedPages).length;
-                progressDisplay.textContent = `Progress: ${completedCount} / ${totalPages} pages completed`;
+                progressDisplay.textContent = `Unit ${currentUnit} - Lesson ${currentLesson} | Progress: ${completedCount} / ${totalLessons} lessons completed`;
             }
         }
 
@@ -400,23 +412,11 @@
             document.getElementById('exercisesContainer').style.display = 'block';
         }
 
-        async function loadPage(pageNumber) {
-            console.log(`Loading page ${pageNumber}`);
-
-            let pageFile;
-            let isConversation = false;
-
-            if (pageNumber % conversationInterval === 0) {
-                pageFile = pageDirectory + "conversation.txt";
-                isConversation = true;
-                console.log("Loading conversation file:", pageFile);
-            } else {
-                pageFile = pageDirectory + "page" + pageNumber + ".json";
-                console.log("Loading JSON page file:", pageFile);
-            }
+        async function loadPage(unit, lesson) {
+            console.log(`Loading unit ${unit}, lesson ${lesson}`);
+            let { file: pageFile, isConversation } = getPageFile(unit, lesson);
 
             try {
-
                 const response = await fetch(pageFile);
                 if (!response.ok) {
                     let errorMessage = `HTTP error! status: ${response.status} for ${pageFile}`;
@@ -427,20 +427,19 @@
                         errorMessage += `. Could not read error body.`;
                     }
                     if (response.status === 404) {
-                        document.getElementById('pageContent').innerHTML = `<p>Page ${pageNumber} not found. You might be at the end!</p>`;
-                        totalPages = pageNumber - 1;
+                        document.getElementById('pageContent').innerHTML = `<p>Lesson not found. You might be at the end!</p>`;
+                        // Adjust totalUnits/totalLessons if needed
                         updateNavButtons();
                         return;
                     }
                     throw new Error(errorMessage);
                 }
 
-                let pageData;
                 if (isConversation) {
                     const pagePrompt = await response.text();
-                    processConversation(pagePrompt);
+                    processConversation(pagePrompt, unit, lesson);
                 } else {
-                    pageData = await response.json();
+                    const pageData = await response.json();
                     processJsonPage(pageData);
                 }
 
@@ -448,26 +447,42 @@
                 updateProgressDisplay();
 
             } catch (error) {
-                console.error("Error loading or parsing page:", error);
-                document.getElementById('pageContent').innerHTML = `<p>Error loading page ${pageNumber}. Please check the console for details.</p>`;
+                console.error("Error loading or parsing lesson:", error);
+                document.getElementById('pageContent').innerHTML = `<p>Error loading lesson. Please check the console for details.</p>`;
                 updateNavButtons();
             }
         }
 
-        async function processConversation(prompt) {
+        // Enhanced AI conversation: add context and role
+        async function processConversation(prompt, unit, lesson) {
             console.log("Processing conversation prompt...");
             const pageContentDiv = document.getElementById('pageContent');
             pageContentDiv.innerHTML = '<p>Generating conversation...</p>';
+            // Add context for realism
+            let contextPrompt = `You are a friendly Spanish conversation partner. We are in Unit ${unit}, Lesson ${lesson}. Please use vocabulary and grammar from this unit/lesson. Respond naturally, ask questions, and encourage the learner to reply in Spanish.\n\n` + prompt;
             try {
-                const aiResponse = await puter.ai.chat(prompt);
-                pageContentDiv.innerHTML = `<p>${aiResponse}</p>`;
-                console.log("AI Response:", aiResponse);
+                const aiResponse = await puter.ai.chat(contextPrompt);
+                pageContentDiv.innerHTML = `<div><b>AI:</b> ${aiResponse}</div><br><textarea id="aiReply" placeholder="Type your reply in Spanish..."></textarea><br><button onclick="sendAiReply(${unit},${lesson})">Send</button><div id="aiFeedback"></div>`;
             } catch (error) {
                 console.error("Error processing conversation with AI:", error);
                 pageContentDiv.innerHTML = "<p>Error generating AI content. Check console.</p>";
                 if (error && error.message && error.message.includes('401')) {
                     pageContentDiv.innerHTML += "<p><i>(Authentication error with Putter.js. Ensure you are logged in or the service is configured correctly.)</i></p>";
                 }
+            }
+        }
+
+        // Handle user reply to AI
+        async function sendAiReply(unit, lesson) {
+            const userReply = document.getElementById('aiReply').value;
+            const aiFeedbackDiv = document.getElementById('aiFeedback');
+            aiFeedbackDiv.innerHTML = '<i>Thinking...</i>';
+            let feedbackPrompt = `You are a Spanish teacher. The student replied: "${userReply}". Give gentle feedback, correct mistakes, and encourage them to continue the conversation in Spanish. Keep it short.`;
+            try {
+                const feedback = await puter.ai.chat(feedbackPrompt);
+                aiFeedbackDiv.innerHTML = `<b>AI Feedback:</b> ${feedback}`;
+            } catch (error) {
+                aiFeedbackDiv.innerHTML = '<span style="color:red">Error getting feedback from AI.</span>';
             }
         }
 
@@ -541,8 +556,8 @@
                                     `;
                                 });
                             } else if (exercise.type === 'fillInTheBlank') {
-                                const savedAnswer = savedAnswers[currentPage + '-' + index] || ''; // Retrieve saved answer
-                                exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer" value="${savedAnswer}" oninput="saveAnswer(${currentPage}, ${index}, this.value)">`;
+                                const savedAnswer = savedAnswers[currentUnit + '-' + currentLesson + '-' + index] || ''; // Retrieve saved answer
+                                exercisesHtml += `<input type="text" id="exercise${index}Answer" placeholder="Your answer" value="${savedAnswer}" oninput="saveAnswer(${currentUnit}, ${currentLesson}, ${index}, this.value)">`;
                                 // Render Spanish keyboard for this input
                                 exercisesHtml += `<div id="spanishKeyboard">${renderSpanishKeyboard(index)}</div>`;
                             }
@@ -608,8 +623,8 @@
             if (isCorrect) {
                 feedbackDiv.innerHTML = '<p class="correct">Correct!</p>';
                 buttonElement.disabled = true;
-                if (!completedPages[currentPage]) {
-                    completedPages[currentPage] = true; // Mark page as complete
+                if (!completedPages[currentUnit + '-' + currentLesson]) {
+                    completedPages[currentUnit + '-' + currentLesson] = true; // Mark lesson as complete
                     saveProgress(); // Save progress immediately
                     updateProgressDisplay(); // Update progress bar immediately
                 }
@@ -625,8 +640,8 @@
         }
 
         // Helper function to save answers as the user types
-        function saveAnswer(page, index, answer) {
-            savedAnswers[page + '-' + index] = answer;
+        function saveAnswer(unit, lesson, index, answer) {
+            savedAnswers[unit + '-' + lesson + '-' + index] = answer;
             saveProgress();
         }
 
@@ -648,18 +663,25 @@
             return cleaned.trim();
         }
 
-        // Renamed from nextLesson
+        // Navigation for units/lessons
         function nextPage() {
-            currentPage++;
-            loadPage(currentPage);
+            if (currentLesson < lessonsPerUnit) {
+                currentLesson++;
+            } else if (currentUnit < totalUnits) {
+                currentUnit++;
+                currentLesson = 1;
+            }
+            loadPage(currentUnit, currentLesson);
         }
 
-        // Renamed from previousLesson
         function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                loadPage(currentPage);
+            if (currentLesson > 1) {
+                currentLesson--;
+            } else if (currentUnit > 1) {
+                currentUnit--;
+                currentLesson = lessonsPerUnit;
             }
+            loadPage(currentUnit, currentLesson);
         }
 
         // Initial Load on window load
@@ -675,7 +697,7 @@
             }
 
             loadProgress(); // Load progress first
-            loadPage(currentPage);
+            loadPage(currentUnit, currentLesson);
         });
 
         // Disable right-click context menu
@@ -688,11 +710,11 @@
 <body>
     <div id="pageContainer">
         <a href="../index.html" class="back-link">&larr; Back to Course Selection</a>
-        <div id="progress">Progress: 0 / 5 pages completed</div>
+        <div id="progress">Unit 1 - Lesson 1 | Progress: 0 / 5 lessons completed</div>
         <div id="pageContent"></div>
         <div id="navigation">
-            <button id="prevButton" onclick="previousPage()" aria-label="Previous Page"  aria-disabled="false">Previous</button>
-            <button id="nextButton" onclick="nextPage()" aria-label="Next Page" aria-disabled="false">Next</button>
+            <button id="prevButton" onclick="previousPage()" aria-label="Previous Lesson" aria-disabled="false">Previous</button>
+            <button id="nextButton" onclick="nextPage()" aria-label="Next Lesson" aria-disabled="false">Next</button>
         </div>
     </div>
 </body>
