@@ -13,6 +13,24 @@
             background-color: #f9f9f9;
         }
 
+        #loadingIndicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #loadingIndicator img {
+            width: 50px; /* Adjust the size as needed */
+            height: 50px;
+        }
+
         h1,
         h3 {
             color: #333;
@@ -280,10 +298,11 @@
         let currentPage = 1;
         const pageDirectory = "spanish_pages/";
         const conversationInterval = 7; // Trigger conversation every 7 pages
-        let totalPages = 5; // Keep track of available pages (Update this manually or dynamically)
+        // let totalPages = 5; // Keep track of available pages (Update this manually or dynamically)
         let completedPages = {}; // Object to store completed pages
         let savedAnswers = {}; // Object to store saved answers
         let exercisesVisible = false; // Track if exercises are visible
+        let totalPages = 5; // Default value, updated dynamically
 
         // Function to save progress
         function saveProgress() {
@@ -326,6 +345,8 @@
         function updateNavButtons() {
             document.getElementById('prevButton').disabled = (currentPage <= 1);
             document.getElementById('nextButton').disabled = (currentPage >= totalPages);
+            document.getElementById('prevButton').setAttribute('aria-disabled', (currentPage <= 1).toString());
+            document.getElementById('nextButton').setAttribute('aria-disabled', (currentPage >= totalPages).toString());
         }
 
         // Function to update the progress display
@@ -398,13 +419,20 @@
 
                 const response = await fetch(pageFile);
                 if (!response.ok) {
+                    let errorMessage = `HTTP error! status: ${response.status} for ${pageFile}`;
+                    try {
+                        const errorBody = await response.text();
+                        errorMessage += `. Error body: ${errorBody}`;
+                    } catch (bodyError) {
+                        errorMessage += `. Could not read error body.`;
+                    }
                     if (response.status === 404) {
                         document.getElementById('pageContent').innerHTML = `<p>Page ${pageNumber} not found. You might be at the end!</p>`;
                         totalPages = pageNumber - 1;
                         updateNavButtons();
                         return;
                     }
-                    throw new Error(`HTTP error! status: ${response.status} for ${pageFile}`);
+                    throw new Error(errorMessage);
                 }
 
                 let pageData;
@@ -663,8 +691,8 @@
         <div id="progress">Progress: 0 / 5 pages completed</div>
         <div id="pageContent"></div>
         <div id="navigation">
-            <button id="prevButton" onclick="previousPage()">Previous</button>
-            <button id="nextButton" onclick="nextPage()">Next</button>
+            <button id="prevButton" onclick="previousPage()" aria-label="Previous Page"  aria-disabled="false">Previous</button>
+            <button id="nextButton" onclick="nextPage()" aria-label="Next Page" aria-disabled="false">Next</button>
         </div>
     </div>
 </body>
